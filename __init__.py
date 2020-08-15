@@ -9,10 +9,10 @@ Print support Mycroft Skill
 class Print(MycroftSkill):
     def __init__(self):
         MycroftSkill.__init__(self)
-        self.add_event('speak', self.handler_speak)
         self.printdev = ""
 
     def initialize(self):
+        self.add_event('speak', self.handler_speak)
         self.add_event('configuration.updated', self.handler_configuration_updated)
         self.load_configuration()
         self.register_entity_file('target.entity')
