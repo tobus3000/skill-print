@@ -10,6 +10,7 @@ class Print(MycroftSkill):
     def __init__(self):
         MycroftSkill.__init__(self)
         self.printdev = ""
+        self.printall = False
 
     def initialize(self):
         self.add_event('speak', self.handler_speak)
@@ -52,7 +53,11 @@ class Print(MycroftSkill):
 ##        self.log.debug(result)
 
     def handler_speak(self, message):
-        self.print_out(message) 
+        if self.printall:
+            self.print_out(format(message.data.get('utterance'))) 
+        else:
+            self.log.debug("Skipping printout of message.")
+
         
     def print_out(self, target):
         self.log.debug("Printing....")        
