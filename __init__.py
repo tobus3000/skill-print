@@ -34,6 +34,7 @@ class Print(MycroftSkill):
         self.printall = self.settings.get('printall', False)
 
         self.log.info("Printer device is: " + str(self.printdev))
+        self.log.debug("Print out everything is set to: " + str(self.printall))
         return
 
     """
@@ -55,7 +56,7 @@ class Print(MycroftSkill):
 ##        self.log.debug(result)
 
     def handler_speak(self, message):
-        if self.printall is True:
+        if self.printall:
             self.print_out(format(message.data.get('utterance'))) 
         else:
             self.log.debug("Skipping printout of message.")
