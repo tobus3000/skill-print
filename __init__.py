@@ -31,7 +31,7 @@ class Print(MycroftSkill):
 
     def load_configuration(self):
         self.printdev = self.settings.get('printdev')
-        self.printall = self.settings.get('printall')
+        self.printall = self.settings.get('printall', False)
 
         self.log.info("Printer device is: " + str(self.printdev))
         return

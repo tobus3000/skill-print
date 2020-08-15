@@ -1,15 +1,15 @@
 skillMetadata:
     sections:
-      - name: "Options"
+      - name: Options
         fields:
-          - name: "Print out everything?"
-            type: "checkbox"
-            label: "Prints out everything Mycroft says when checked."
+          - name: Print out everything?
+            type: checkbox
+            label: Prints out everything Mycroft says when checked.
             value: "false"
-      - name: "USB Printer"
-        fields:
-          - name: "printdev"
-            type: "text"
-            label: "The path to your printer (eg. /dev/usb/lp0)."
+      - name: USB Printer
+          fields:
+          - name: printdev
+            type: text
+            label: The local path (eg. /dev/usb/lp0).
             value: "/dev/usb/lp0"
   
