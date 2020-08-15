@@ -56,10 +56,10 @@ class Print(MycroftSkill):
 ##        self.log.debug(result)
 
     def handler_speak(self, message):
-        if self.printall:
-            self.print_out(format(message.data.get('utterance'))) 
-        else:
-            self.log.debug("Skipping printout of message.")
+        #if self.printall:
+        self.print_out(format(message.data.get('utterance'))) 
+        #else:
+        #    self.log.debug("Skipping printout of message.")
 
         
     def print_out(self, target):
