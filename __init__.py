@@ -9,6 +9,7 @@ Print support Mycroft Skill
 class Print(MycroftSkill):
     def __init__(self):
         MycroftSkill.__init__(self)
+        self.add_event('speak', self.handler_speak)
         self.printdev = ""
 
     def initialize(self):
@@ -50,10 +51,12 @@ class Print(MycroftSkill):
 ##        result = self.fetch_status(target)
 ##        self.log.debug(result)
 
+    def handler_speak(self, message):
+        self.print_out(message) 
         
     def print_out(self, target):
         self.log.debug("Printing....")        
-        cmd = 'echo "test test test' + str(target) + '" >> ' + self.printdev
+        cmd = 'echo "' + str(target) + '" >> ' + self.printdev
         #cmd = 'echo "test test test" >> ' + self.printdev
         returned_value = os.system(cmd)  # returns the exit code in unix
         self.log.debug("Returned value:" + str(returned_value))
