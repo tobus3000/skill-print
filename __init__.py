@@ -51,10 +51,10 @@ class Print(MycroftSkill):
 ##        self.log.debug(result)
 
         
-    def print_out(self, message):
+    def print_out(self, target):
         self.log.debug("Printing....")        
-        #cmd = 'echo "test test test' + str(target) + '"'
-        cmd = 'echo "test test test" >> ' + self.printdev
+        cmd = 'echo "test test test' + str(target) + '" >> ' + self.printdev
+        #cmd = 'echo "test test test" >> ' + self.printdev
         returned_value = os.system(cmd)  # returns the exit code in unix
         self.log.debug("Returned value:" + str(returned_value))
 
