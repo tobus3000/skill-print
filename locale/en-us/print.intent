@@ -1,1 +1,2 @@
 Print {target}.
+Print last ({amount}) message(s).

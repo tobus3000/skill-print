@@ -87,7 +87,7 @@ class Print(MycroftSkill):
             cmd = 'echo "' + str(target) + '" >> ' + self.print_dev
             returned_value = os.system(cmd)  # returns the exit code in unix
         else:
-            self.log.debug("There is a problem with your printer on " + str(self.print_dev))
+            self.speak_dialog('error')
         self.log.debug("Returned value:" + str(returned_value))
 
 
