@@ -43,10 +43,10 @@ class Print(MycroftSkill):
 
 
     def bucket_add(self, message):
-        date = date.today()
+        today = date.today()
         if self.bucket_size <= len(self.msg_bucket):
-            self.msg_bucket.del[0] 
-        self.msg_bucket.append((date, message))
+            del(self.msg_bucket[0]) 
+        self.msg_bucket.append((today, message))
 
     def bucket_get(self, message, amount):
         pass
@@ -79,8 +79,9 @@ class Print(MycroftSkill):
 
         
     def print_out(self, target):
-        self.log.debug("Printing....")        
-        cmd_ts = 'echo "' + str(date) + ':" >> ' + self.print_dev
+        today = date.today()
+        self.log.debug("Printing....") 
+        cmd_ts = 'echo "' + str(today) + ':" >> ' + self.print_dev
         exit_code = os.system(cmd_ts)
         if exit_code == 0: 
             cmd = 'echo "' + str(target) + '" >> ' + self.print_dev
