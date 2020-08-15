@@ -9,8 +9,10 @@ Print support Mycroft Skill
 class Print(MycroftSkill):
     def __init__(self):
         MycroftSkill.__init__(self)
-        self.printdev = ""
-        self.printall = False
+        self.print_dev = ""
+        self.print_all = False
+        self.bucket_size = 50
+        self.msg_bucket = []
 
     def initialize(self):
         self.add_event('speak', self.handler_speak)
@@ -30,12 +32,25 @@ class Print(MycroftSkill):
         return
 
     def load_configuration(self):
-        self.printdev = self.settings.get('printdev')
-        self.printall = self.settings.get('printall', False)
+        self.print_dev = self.settings.get('printdev')
+        self.print_all = self.settings.get('printall', False)
+        self.bucket_size = self.settings.get('bucketsize', 50)
 
-        self.log.info("Printer device is: " + str(self.printdev))
-        self.log.debug("Print out everything is set to: " + str(self.printall))
+        self.log.info("Printer device is: " + str(self.print_dev))
+        self.log.debug("Print out everything is set to: " + str(self.print_all))
+        self.log.debug("Past messages bucket size: " + str(self.bucket_size))
         return
+
+
+    def bucket_add(self, message):
+        date = date.today()
+        if self.bucket_size <= len(self.msg_bucket):
+            self.msg_bucket.del[0] 
+        self.msg_bucket.append((date, message))
+
+    def bucket_get(self, message, amount):
+        pass
+
 
     """
     Handle intents
@@ -56,18 +71,24 @@ class Print(MycroftSkill):
 ##        self.log.debug(result)
 
     def handler_speak(self, message):
-        #if self.printall:
-        self.print_out(format(message.data.get('utterance'))) 
-        #else:
-        #    self.log.debug("Skipping printout of message.")
+        self.bucket_add(message)
+        if self.print_all:
+            self.print_out(format(message.data.get('utterance'))) 
+        else:
+            self.log.debug("Skipping printout of message.")
 
         
     def print_out(self, target):
         self.log.debug("Printing....")        
-        cmd = 'echo "' + str(target) + '" >> ' + self.printdev
-        #cmd = 'echo "test test test" >> ' + self.printdev
-        returned_value = os.system(cmd)  # returns the exit code in unix
+        cmd_ts = 'echo "' + str(date) + ':" >> ' + self.print_dev
+        exit_code = os.system(cmd_ts)
+        if exit_code == 0: 
+            cmd = 'echo "' + str(target) + '" >> ' + self.print_dev
+            returned_value = os.system(cmd)  # returns the exit code in unix
+        else:
+            self.log.debug("There is a problem with your printer on " + str(self.print_dev))
         self.log.debug("Returned value:" + str(returned_value))
+
 
 
 

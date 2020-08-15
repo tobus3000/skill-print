@@ -2,10 +2,14 @@ skillMetadata:
     sections:
       - name: Options
         fields:
-          - name: Print out everything?
+          - name: printall
             type: checkbox
             label: Prints out everything Mycroft says when checked.
             value: "false"
+          - name: bucketsize
+            type: number
+            label: How many past messages to keep?
+            value: 50
       - name: USB Printer
         fields:
           - name: printdev
