@@ -39,8 +39,8 @@ class Print(MycroftSkill):
     def handler_print(self, message):
         self.log.debug("Running print handler....")	
         """ Fetch the target from the message """
-        ##target = message.data.get('target')
-        self.print_out(message)
+        target = message.data.get('target')
+        self.print_out(target)
 ##        if target is None:
 ##            self.log.debug("Could not identify the target system to be queried. Defaulting to 'system'.")
 ##            if self.chatterbox:
@@ -53,7 +53,7 @@ class Print(MycroftSkill):
         
     def print_out(self, message):
         self.log.debug("Printing....")        
-        cmd = 'echo "test test test"'
+        cmd = 'echo "test test test' + str(target) + '"'
         returned_value = os.system(cmd)  # returns the exit code in unix
         self.log.debug("Returned value:" + str(returned_value))
 
