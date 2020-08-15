@@ -7,7 +7,7 @@ skillMetadata:
             label: Prints out everything Mycroft says when checked.
             value: "false"
       - name: USB Printer
-          fields:
+        fields:
           - name: printdev
             type: text
             label: The local path (eg. /dev/usb/lp0).
