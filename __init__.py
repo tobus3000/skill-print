@@ -14,7 +14,7 @@ class Print(MycroftSkill):
     def initialize(self):
         self.add_event('configuration.updated', self.handler_configuration_updated)
         self.load_configuration()
-        #self.register_entity_file('target.entity')
+        self.register_entity_file('target.entity')
 
     def stop(self):
         pass
