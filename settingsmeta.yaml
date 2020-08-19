@@ -2,6 +2,10 @@ skillMetadata:
     sections:
       - name: Options
         fields:
+          - name: printeractive
+            type: checkbox
+            label: Printer is connected.
+            value: "false"
           - name: printall
             type: checkbox
             label: Prints out everything Mycroft says when checked.
