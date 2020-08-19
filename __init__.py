@@ -63,12 +63,12 @@ class Print(MycroftSkill):
 
     def enable_printer(self):
         self.printer_active = True
-        self.settings.set('printeractive', True)
+        self.settings['printeractive'] = True
         return
 
     def disable_printer(self):
         self.printer_active = False
-        self.settings.set('printeractive', False)
+        self.settings['printeractive'] = False
         return
 
 
@@ -101,9 +101,11 @@ class Print(MycroftSkill):
         if action == "enable" or action == "activate":
             self.speak("Enabling printer.")
             self.enable_printer()
+            self.acknowledge()
         elif action == "disable" or action == "deactivate":
             self.speak("Disabling printer.")
             self.disable_printer()
+            self.acknowledge()
 
 
     def handler_speak(self, message):
