@@ -1,5 +1,6 @@
 from mycroft import MycroftSkill, intent_handler
-from datetime import date, timedelta, datetime, time, tzinfo
+#from datetime import date, timedelta, datetime, time, tzinfo
+from datetime import datetime, timezone
 import os
 
 """
@@ -43,7 +44,8 @@ class Print(MycroftSkill):
 
 
     def bucket_add(self, message):
-        today = datetime.now()
+        #today = datetime.now()
+        today = "testdate"
         if self.bucket_size <= len(self.msg_bucket):
             del(self.msg_bucket[0]) 
         self.msg_bucket.append((today, message))
@@ -79,7 +81,10 @@ class Print(MycroftSkill):
 
         
     def print_out(self, target):
-        today = datetime.now()
+        #today = datetime.now()
+        #tz = self.location_timezone
+        utc_dt = datetime.now(timezone.utc) # UTC time
+        today = utc_dt.astimezone() # local time
         self.log.debug("Printing....") 
         cmd_ts = 'echo "' + str(today) + ':" >> ' + self.print_dev
         exit_code = os.system(cmd_ts)
