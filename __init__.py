@@ -12,9 +12,12 @@ class Print(MycroftSkill):
     def __init__(self):
         MycroftSkill.__init__(self)
         self.print_dev = ""
+        self.print_time = True
         self.print_all = False
+        self.print_lf = False
         self.bucket_size = 50
         self.msg_bucket = []
+        self.error_state = False
 
     def initialize(self):
         self.add_event('speak', self.handler_speak)
@@ -36,6 +39,8 @@ class Print(MycroftSkill):
     def load_configuration(self):
         self.print_dev = self.settings.get('printdev')
         self.print_all = self.settings.get('printall', False)
+        self.print_lf = self.settings.get('printlf', False)
+        self.print_time = self.settings.get('printtime', True)
         self.bucket_size = self.settings.get('bucketsize', 50)
 
         self.log.info("Printer device is: " + str(self.print_dev))
@@ -82,22 +87,33 @@ class Print(MycroftSkill):
 
         
     def print_out(self, target):
-        #today = datetime.now()
-        tz = pytz.timezone(self.location_timezone)
-        cur_time_obj = datetime.now(tz)
-        print_time = cur_time_obj.strftime('%d.%m.%Y %H:%M:%S %Z %z')
+        self.log.debug("Printing...")
+        if self.print_time and self.error_state == False:
+            tz = pytz.timezone(self.location_timezone)
+            cur_time_obj = datetime.now(tz)
+            print_time = cur_time_obj.strftime('%d.%m.%Y %H:%M:%S %Z %z')
+            cmd_ts = 'echo "' + str(print_time) + ' >> ' + self.print_dev
+            exit_code = os.system(cmd_ts)
+            if exit_code != 0:
+                self.speak_dialog('error')
+                self.error_state = True
 
-        #utc_dt = datetime.now(timezone.utc) # UTC time
-        #today = utc_dt.astimezone(self.location_timezone) # local time
-        self.log.debug("Printing....") 
-        cmd_ts = 'echo "' + str(print_time) + ':" >> ' + self.print_dev
-        exit_code = os.system(cmd_ts)
-        if exit_code == 0: 
+        #cmd_ts = 'echo "' + str(print_time) + ':" >> ' + self.print_dev
+        #exit_code = os.system(cmd_ts)
+        if self.error_state == False: 
             cmd = 'echo "' + str(target) + '" >> ' + self.print_dev
-            returned_value = os.system(cmd)  # returns the exit code in unix
-        else:
-            self.speak_dialog('error')
-        self.log.debug("Returned value:" + str(returned_value))
+            exit_code = os.system(cmd)  # returns the exit code in unix
+            if exit_code != 0:
+                self.speak_dialog('error')
+                self.error_state = True
+
+            #self.log.debug("Returned value:" + str(exit_code))
+        if self.error_state == False and self.print_lf == True:
+            cmd = 'echo "" >> ' + self.print_dev
+            exit_code = os.system(cmd)
+            if exit_code != 0:
+                self.speak_dialog('error')
+                self.error_state = True
 
 
 

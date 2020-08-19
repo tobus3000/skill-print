@@ -6,6 +6,14 @@ skillMetadata:
             type: checkbox
             label: Prints out everything Mycroft says when checked.
             value: "false"
+          - name: printtime
+            type: checkbox
+            label: Print current date/time with message.
+            value: "true"
+          - name: printlf
+            type: checkbox
+            label: Adds a line feed after each message.
+            value: "false"
           - name: bucketsize
             type: number
             label: How many past messages to keep?
