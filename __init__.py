@@ -1,6 +1,7 @@
 from mycroft import MycroftSkill, intent_handler
 #from datetime import date, timedelta, datetime, time, tzinfo
 from datetime import datetime, timezone
+import pytz 
 import os
 
 """
@@ -82,11 +83,14 @@ class Print(MycroftSkill):
         
     def print_out(self, target):
         #today = datetime.now()
-        #tz = self.location_timezone
-        utc_dt = datetime.now(timezone.utc) # UTC time
-        today = utc_dt.astimezone(self.location_timezone) # local time
+        tz = pytz.timezone(self.location_timezone)
+        cur_time_obj = datetime.now(tz)
+        print_time = cur_time_obj.strftime('%d.%m.%Y %H:%M:%S %Z %z')
+
+        #utc_dt = datetime.now(timezone.utc) # UTC time
+        #today = utc_dt.astimezone(self.location_timezone) # local time
         self.log.debug("Printing....") 
-        cmd_ts = 'echo "' + str(today) + ':" >> ' + self.print_dev
+        cmd_ts = 'echo "' + str(print_time) + ':" >> ' + self.print_dev
         exit_code = os.system(cmd_ts)
         if exit_code == 0: 
             cmd = 'echo "' + str(target) + '" >> ' + self.print_dev
