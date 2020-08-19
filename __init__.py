@@ -122,7 +122,7 @@ class Print(MycroftSkill):
             tz = pytz.timezone(self.location_timezone)
             cur_time_obj = datetime.now(tz)
             print_time = cur_time_obj.strftime('%d.%m.%Y %H:%M:%S %Z %z')
-            cmd_ts = 'echo "' + str(print_time) + ' >> ' + self.print_dev
+            cmd_ts = 'echo "' + str(print_time) + '" >> ' + self.print_dev
             exit_code = os.system(cmd_ts)
             if exit_code != 0:
                 self.speak_dialog('error')
@@ -139,7 +139,7 @@ class Print(MycroftSkill):
 
             #self.log.debug("Returned value:" + str(exit_code))
         if self.printer_active and self.print_lf:
-            cmd = 'echo "" >> ' + self.print_dev
+            cmd = 'echo " " >> ' + self.print_dev
             exit_code = os.system(cmd)
             if exit_code != 0:
                 self.speak_dialog('error')
