@@ -71,6 +71,15 @@ class Print(MycroftSkill):
         self.settings['printeractive'] = False
         return
 
+    def enable_linefeed(self):
+        self.print_lf = True
+        self.settings['printlf'] = True
+        return
+
+    def disable_linefeed(self):
+        self.print_lf = False
+        self.settings['printlf'] = False
+        return
 
     """
     Handle intents
@@ -80,6 +89,7 @@ class Print(MycroftSkill):
         self.log.debug("Running print handler....")	
         """ Fetch the target from the message """
         target = message.data.get('target')
+        amount = message.data.get('amount')
         self.print_out(target)
 ##        if target is None:
 ##            self.log.debug("Could not identify the target system to be queried. Defaulting to 'system'.")
@@ -90,23 +100,36 @@ class Print(MycroftSkill):
 ##        result = self.fetch_status(target)
 ##        self.log.debug(result)
 
-    @intent_handler('enabledisable.intent')
+    @intent_handler('printerconfig.intent')
     def handler_config(self, message):
         self.log.debug("Running config handler....")
         action = message.data.get('action')
+        target = message.data.get('target')
         if action is None:
             self.speak("I did not understand. Please repeat.")
             return
         
-        if action == "enable" or action == "activate":
-            self.speak("Enabling printer.")
-            self.enable_printer()
-            self.acknowledge()
-        elif action == "disable" or action == "deactivate":
-            self.speak("Disabling printer.")
-            self.disable_printer()
-            self.acknowledge()
+        if target is None:
+            self.speak("I didn't catch the target. Can you please repeat?")
+            return
 
+        if action == "enable" or action == "activate":
+            if target == "printer":
+                self.speak("Enabling printer.")
+                self.enable_printer()
+                
+            elif target == "linefeed":
+                self.speak("Enabling line feed.")
+                self.enable_linefeed()
+
+        elif action == "disable" or action == "deactivate":
+            if target == "printer":
+                self.speak("Disabling printer.")
+                self.disable_printer()
+
+            elif target == "linefeed":
+                self.speak("Disabling linefeed.")
+                self.disable_linefeed()
 
     def handler_speak(self, message):
         self.bucket_add(message)

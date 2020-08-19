@@ -1,2 +1,4 @@
-Print {target}.
-Print last ({amount}) message(s).
+print {target}.
+print last ({amount}) message(s).
+print {amount} messages.
+print message buffer.
