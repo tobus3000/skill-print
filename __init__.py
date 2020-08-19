@@ -84,7 +84,7 @@ class Print(MycroftSkill):
         #today = datetime.now()
         #tz = self.location_timezone
         utc_dt = datetime.now(timezone.utc) # UTC time
-        today = utc_dt.astimezone() # local time
+        today = utc_dt.astimezone(self.location_timezone) # local time
         self.log.debug("Printing....") 
         cmd_ts = 'echo "' + str(today) + ':" >> ' + self.print_dev
         exit_code = os.system(cmd_ts)
