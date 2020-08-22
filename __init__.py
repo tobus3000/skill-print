@@ -90,7 +90,7 @@ class Print(MycroftSkill):
     """ Some checking to avoid shell command injection and to make sure the device is active. """
     def is_valid_printdev(self, printdev):
         cmd = "file " + self.print_dev
-        exit_code = os.system(cmd_ts)
+        exit_code = os.system(cmd)
         self.log.debug("EXIT CODE: " + str(exit_code))
         #device_re = re.compile("Bus\s+(?P<bus>\d+)\s+Device\s+(?P<device>\d+).+ID\s(?P<id>\w+:\w+)\s(?P<tag>.+)$", re.I)
         #df = subprocess.check_output("lsusb")
