@@ -4,7 +4,6 @@ from datetime import datetime, timezone
 import pytz 
 import os
 import re
-import subprocess
 
 """
 Print support Mycroft Skill
@@ -90,9 +89,12 @@ class Print(MycroftSkill):
 
     """ Some checking to avoid shell command injection and to make sure the device is active. """
     def is_valid_printdev(self, printdev):
+        cmd = "file " + self.print_dev
+        exit_code = os.system(cmd_ts)
+        self.log.debug("EXIT CODE: " + str(exit_code))
         #device_re = re.compile("Bus\s+(?P<bus>\d+)\s+Device\s+(?P<device>\d+).+ID\s(?P<id>\w+:\w+)\s(?P<tag>.+)$", re.I)
-        df = subprocess.check_output("lsusb")
-        devices = []
+        #df = subprocess.check_output("lsusb")
+        #devices = []
         #for i in df.split('\n'):
         #    if i:
         #        info = device_re.match(i)
@@ -100,7 +102,7 @@ class Print(MycroftSkill):
         #            dinfo = info.groupdict()
         #            dinfo['device'] = '/dev/bus/usb/%s/%s' % (dinfo.pop('bus'), dinfo.pop('device'))
         #            devices.append(dinfo)
-        self.log.debug(str(df));
+        #self.log.debug(str(df));
         return True
 
     """
@@ -162,6 +164,7 @@ class Print(MycroftSkill):
 
         
     def print_out(self, target):
+        self.is_valid_printdev()
         self.log.debug("Printing...")
         if self.print_time and self.printer_active:
             tz = pytz.timezone(self.location_timezone)
