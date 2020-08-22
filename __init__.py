@@ -164,7 +164,7 @@ class Print(MycroftSkill):
 
         
     def print_out(self, target):
-        self.is_valid_printdev()
+        self.is_valid_printdev(self.print_dev)
         self.log.debug("Printing...")
         if self.print_time and self.printer_active:
             tz = pytz.timezone(self.location_timezone)
