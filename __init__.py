@@ -100,7 +100,7 @@ class Print(MycroftSkill):
         #            dinfo = info.groupdict()
         #            dinfo['device'] = '/dev/bus/usb/%s/%s' % (dinfo.pop('bus'), dinfo.pop('device'))
         #            devices.append(dinfo)
-        self.debug.log(str(df));
+        self.log.debug(str(df));
         return True
 
     """
