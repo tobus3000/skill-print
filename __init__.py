@@ -3,6 +3,8 @@ from mycroft import MycroftSkill, intent_handler
 from datetime import datetime, timezone
 import pytz 
 import os
+import re
+import subprocess
 
 """
 Print support Mycroft Skill
@@ -44,10 +46,15 @@ class Print(MycroftSkill):
         self.print_lf = self.settings.get('printlf', False)
         self.print_time = self.settings.get('printtime', True)
         self.bucket_size = self.settings.get('bucketsize', 50)
-
-        self.log.info("Printer device is: " + str(self.print_dev))
-        self.log.debug("Print out everything is set to: " + str(self.print_all))
-        self.log.debug("Past messages bucket size: " + str(self.bucket_size))
+        if self.is_valid_printdev(self.print_dev):
+            self.log.info("Printer device is: " + str(self.print_dev))
+            self.log.debug("Print out everything is set to: " + str(self.print_all))
+            self.log.debug("Past messages bucket size: " + str(self.bucket_size))
+        else:
+            self.disable_printer()
+            self.log.info("Printer device seems to be invalid.")
+            self.log.debug("Print out everything is set to: " + str(self.print_all))
+            self.log.debug("Print out everything is set to: " + str(self.print_all))
         return
 
 
@@ -80,6 +87,21 @@ class Print(MycroftSkill):
         self.print_lf = False
         self.settings['printlf'] = False
         return
+
+    """ Some checking to avoid shell command injection and to make sure the device is active. """
+    def is_valid_printdev(self, printdev):
+        device_re = re.compile("Bus\s+(?P<bus>\d+)\s+Device\s+(?P<device>\d+).+ID\s(?P<id>\w+:\w+)\s(?P<tag>.+)$", re.I)
+        df = subprocess.check_output("lsusb")
+        devices = []
+        for i in df.split('\n'):
+            if i:
+                info = device_re.match(i)
+                if info:
+                    dinfo = info.groupdict()
+                    dinfo['device'] = '/dev/bus/usb/%s/%s' % (dinfo.pop('bus'), dinfo.pop('device'))
+                    devices.append(dinfo)
+        self.debug.log(str(devices));
+        return True
 
     """
     Handle intents
@@ -162,6 +184,7 @@ class Print(MycroftSkill):
 
             #self.log.debug("Returned value:" + str(exit_code))
         if self.printer_active and self.print_lf:
+            self.log.debug("Printing line feed.")
             cmd = 'echo " " >> ' + self.print_dev
             exit_code = os.system(cmd)
             if exit_code != 0:
