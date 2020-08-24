@@ -101,6 +101,13 @@ class Print(MycroftSkill):
         #self.log.debug(str(df));
         return True
 
+    def is_number(self, s):
+        try:
+            float(s)
+            return True
+        except ValueError:
+            return False
+
     """
     Handle intents
     """
@@ -116,7 +123,7 @@ class Print(MycroftSkill):
             self.print_out(" ")
             self.enable_linefeed()
         
-        if float(amount):
+        if self.is_number(amount):
             self.print_out("TESTING AMOUNT: " + str(amount))
             
         if utterance == "print message buffer.":
