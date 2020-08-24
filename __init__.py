@@ -110,6 +110,7 @@ class Print(MycroftSkill):
         """ Fetch the target from the message """
         target = message.data.get('target')
         amount = message.data.get('amount')
+        utterance = message.data.get('utterance')
         if target == "linefeed":
             self.disable_linefeed()
             self.print_out(" ")
@@ -117,15 +118,12 @@ class Print(MycroftSkill):
         
         if float(amount):
             self.print_out("TESTING AMOUNT: " + str(amount))
-        #self.print_out(target)
-##        if target is None:
-##            self.log.debug("Could not identify the target system to be queried. Defaulting to 'system'.")
-##            if self.chatterbox:
-##                self.speak("I didn't understand the target to be checked. Defaulting to system.")
-##            target = "system"
+            
+        if utterance == "print message buffer.":
+            for msg_item in self.msg_bucket:
+                self.log.debug(str(msg_item))
+                self.print_out("TESTING ALL BUFFER: " + str(msg_item))
 
-##        result = self.fetch_status(target)
-##        self.log.debug(result)
 
     @intent_handler('printerconfig.intent')
     def handler_config(self, message):
