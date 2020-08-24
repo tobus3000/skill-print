@@ -1,3 +1,6 @@
 status
 printer
 linefeed
+buffer
+bucket
+queue

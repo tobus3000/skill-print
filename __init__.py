@@ -119,7 +119,6 @@ class Print(MycroftSkill):
         """ Fetch the target from the message """
         target = message.data.get('target')
         amount = message.data.get('amount')
-        utterance = message.data.get('utterance')
         if target == "linefeed":
             self.disable_linefeed()
             self.print_out(" ")
@@ -128,7 +127,7 @@ class Print(MycroftSkill):
         if self.is_number(amount):
             self.print_out("TESTING AMOUNT: " + str(amount))
             
-        if utterance == "print message buffer.":
+        if target == "buffer":
             for msg_item in self.msg_bucket:
                 self.log.debug(str(msg_item))
                 self.print_out("TESTING ALL BUFFER: " + str(msg_item))

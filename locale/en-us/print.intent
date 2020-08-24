@@ -1,4 +1,4 @@
 print {target}.
 print last ({amount}) message(s).
 print {amount} messages.
-print message buffer.
+print message {target}.
