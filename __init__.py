@@ -22,7 +22,7 @@ class Print(MycroftSkill):
 
     def initialize(self):
         self.add_event('speak', self.handler_speak)
-        self.add_event('configuration.updated', self.handler_configuration_updated)
+        self.settings_change_callback = self.load_configuration
         self.load_configuration()
         self.register_entity_file('target.entity')
         self.register_entity_file('action.entity')
@@ -32,11 +32,6 @@ class Print(MycroftSkill):
 
     def shutdown(self):
         pass
-
-    def handler_configuration_updated(self, message):
-        self.load_configuration()
-        self.log.info("Configuration has been reloaded.")
-        return
 
     def load_configuration(self):
         self.printer_active = self.settings.get('printeractive', False)
@@ -157,10 +152,18 @@ class Print(MycroftSkill):
 
     def handler_speak(self, message):
         self.bucket_add(message)
-        if self.print_all:
-            self.print_out(format(message.data.get('utterance'))) 
+        if self.printer_active:
+            if self.print_all:
+                try:
+                    self.print_out(format(message.data.get('utterance'))) 
+                except:
+                    self.log.error("Failed to print.")
+                    self.disable_printer()
+
+            else:
+                self.log.debug("Skipping printout of message.")
         else:
-            self.log.debug("Skipping printout of message.")
+            self.log.debug("Skipping printout because printer is not active.")
 
         
     def print_out(self, target):
@@ -176,8 +179,6 @@ class Print(MycroftSkill):
                 self.speak_dialog('error')
                 self.disable_printer()
                 
-        #cmd_ts = 'echo "' + str(print_time) + ':" >> ' + self.print_dev
-        #exit_code = os.system(cmd_ts)
         if self.printer_active: 
             cmd = 'echo "' + str(target) + '" >> ' + self.print_dev
             exit_code = os.system(cmd)  # returns the exit code in unix
@@ -185,7 +186,6 @@ class Print(MycroftSkill):
                 self.speak_dialog('error')
                 self.disable_printer()
 
-            #self.log.debug("Returned value:" + str(exit_code))
         if self.printer_active and self.print_lf:
             self.log.debug("Printing line feed.")
             cmd = 'echo " " >> ' + self.print_dev
