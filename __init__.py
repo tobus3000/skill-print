@@ -151,7 +151,7 @@ class Print(MycroftSkill):
                 self.enable_printer()
                 
             elif target == "linefeed":
-                self.speak("Enabling line feed.")
+                self.speak("Enabling linefeed.")
                 self.enable_linefeed()
 
         elif action == "disable" or action == "deactivate":
