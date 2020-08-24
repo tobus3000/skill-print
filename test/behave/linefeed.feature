@@ -3,3 +3,7 @@ Feature: linefeed
     Given an English speaking user
      When the user says "enable linefeed"
      Then "skill-print" should reply with "Enabling linefeed."
+  Scenario: disable linefeed
+    Given an English speaking user
+     When the user says "disable linefeed"
+     Then "skill-print" should reply with "Disabling linefeed."

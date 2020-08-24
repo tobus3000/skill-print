@@ -119,7 +119,7 @@ class Print(MycroftSkill):
         """ Fetch the target from the message """
         target = message.data.get('target')
         amount = message.data.get('amount')
-        if target == "linefeed":
+        if target == "linefeed" or target == "feed":
             self.disable_linefeed()
             self.print_out(" ")
             self.enable_linefeed()
