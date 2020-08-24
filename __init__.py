@@ -102,6 +102,8 @@ class Print(MycroftSkill):
         return True
 
     def is_number(self, s):
+        if s is None:
+            return False
         try:
             float(s)
             return True
