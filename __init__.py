@@ -26,6 +26,7 @@ class Print(MycroftSkill):
         self.load_configuration()
         self.register_entity_file('target.entity')
         self.register_entity_file('action.entity')
+        self.register_entity_file('amount.entity')
 
     def stop(self):
         pass
@@ -109,7 +110,14 @@ class Print(MycroftSkill):
         """ Fetch the target from the message """
         target = message.data.get('target')
         amount = message.data.get('amount')
-        self.print_out(target)
+        if target == "linefeed":
+            self.disable_linefeed()
+            self.print_out(" ")
+            self.enable_linefeed()
+        
+        if float(amount):
+            self.print_out("TESTING AMOUNT: " + str(amount))
+        #self.print_out(target)
 ##        if target is None:
 ##            self.log.debug("Could not identify the target system to be queried. Defaulting to 'system'.")
 ##            if self.chatterbox:
