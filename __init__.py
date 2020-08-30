@@ -95,7 +95,7 @@ class Print(MycroftSkill):
             """ There's not too much garbage in the string, thus giving it a shot to see if it exists..."""
             res_obj = subprocess.run(["file", printdev], check=True, timeout=1)
 
-            self.log.info("Valid printer." + res_obj)
+            self.log.info("Valid printer.")
             return True
         self.log.error("Configured printer device is invalid.")
         return False
