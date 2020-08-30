@@ -93,7 +93,7 @@ class Print(MycroftSkill):
         if self.__regex_match(printdev):
             """ There's not too much garbage in the string, thus giving it a shot to see if it exists..."""
             res_obj = subprocess.run(["file", printdev], check=True, timeout=1)
-            if res_obj.check_returncode():
+            if res_obj.returncode == 0:
                 self.log.info("Valid printer.")
                 return True
         self.log.error("Configured printer device is invalid.")
