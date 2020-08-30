@@ -42,7 +42,7 @@ class Print(MycroftSkill):
         self.print_lf = self.settings.get('printlf', False)
         self.print_time = self.settings.get('printtime', True)
         self.bucket_size = self.settings.get('bucketsize', 50)
-        if self.is_valid_printdev(self.print_dev):
+        if self.__valid_printdev(self.print_dev):
             self.log.info("Printer device is: " + str(self.print_dev))
             self.log.debug("Print out everything is set to: " + str(self.print_all))
             self.log.debug("Past messages bucket size: " + str(self.bucket_size))
@@ -97,6 +97,7 @@ class Print(MycroftSkill):
 
             self.log.info("Valid printer." + res_obj)
             return True
+        self.log.error("Configured printer device is invalid.")
         return False
         
 
