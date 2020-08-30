@@ -205,11 +205,11 @@ class Print(MycroftSkill):
             else:
                 for msg_item in self.msg_bucket:
                     (ts, msg) = msg_item
-                    self.print_out(ts)
+                    self.__print("@" + ts)
                     if msg is not None or msg != "":
-                        self.print_out(msg.data.get('utterance'))
+                        self.__print(msg.data.get('utterance'))
                     else:
-                        self.print_out("blank message")
+                        self.__print("blank message")
 
 
 
