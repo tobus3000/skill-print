@@ -199,6 +199,7 @@ class Print(MycroftSkill):
             self.print_out("TESTING AMOUNT: " + str(amount))
             
         if target == "buffer":
+            self.speak("Printing message buffer.")
             if len(self.msg_bucket) == 0:
                 self.speak("The message buffer is empty.")
                 return True
