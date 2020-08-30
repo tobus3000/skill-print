@@ -164,13 +164,17 @@ class Print(MycroftSkill):
         if self.print_time:
             if self.__print(self.__get_datetime()) is False:
                 self.speak_dialog('error')
+                return False
 
         if self.__print(str(msg)) is False:
             self.speak_dialog('error')
+            return False
 
         if self.print_lf:
             if self.__print(str(" ")) is False:
                 self.speak_dialog('error')
+                return False
+        return True
 
 
     """
@@ -194,7 +198,6 @@ class Print(MycroftSkill):
         """ Print the printer status """
         if target == "status":
             self.printer_status()
-            self.linefeed_status()
 
         if self.__is_number(amount):
             self.print_out("TESTING AMOUNT: " + str(amount))
