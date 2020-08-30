@@ -119,6 +119,7 @@ class Print(MycroftSkill):
                 return True
             except:
                 self.printer_disable()
+        self.log.error("Configured printer device is invalid.")
         return False
         
     """ Private: Simple check to see if string is a number... """
@@ -133,13 +134,12 @@ class Print(MycroftSkill):
 
     """ Private: Send message to printer device """
     def __print(self, msg):
-        self.log.debug("Printing line.")
+        self.log.debug("Printing line for message: " +str(msg))
         if self.printer_active() is False:
             self.log.debug("Printer is not active.")
             return False
 
         if self.__valid_printdev(self.print_dev) is False:
-            self.log.error("Configured printer device is invalid.")
             return False
 
         try:
