@@ -170,7 +170,7 @@ class Print(MycroftSkill):
             self.speak_dialog('error')
 
         if self.print_lf:
-            if self.__print(" ") is False:
+            if self.__print(str(" ")) is False:
                 self.speak_dialog('error')
 
 
@@ -207,11 +207,7 @@ class Print(MycroftSkill):
         self.log.debug("Running printerconfig.intent handler.")
         action = message.data.get('action')
         target = message.data.get('target')
-        if action is None:
-            self.speak_dialog('pleaserepeat')
-            return
-        
-        if target is None:
+        if action is None or target is None:
             self.speak_dialog('pleaserepeat')
             return
 
@@ -237,20 +233,11 @@ class Print(MycroftSkill):
         self.bucket_add(message)
         if self.printer_active:
             if self.print_all:
-                try:
-                    self.print_out(format(message.data.get('utterance'))) 
-                except:
-                    self.log.error("Failed to print.")
-                    self.printer_disable()
-
+                self.print_out(format(message.data.get('utterance'))) 
             else:
                 self.log.debug("Skipping printout of message.")
         else:
             self.log.debug("Skipping printout because printer is not active.")
-
-
-
-
 
 
 def create_skill():
