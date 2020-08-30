@@ -204,9 +204,11 @@ class Print(MycroftSkill):
             
         if target == "buffer":
             for msg_item in self.msg_bucket:
-                self.log.debug(str(msg_item.data.get('utterance')))
+                (ts, msg) = msg_item
+                self.log.debug(str(msg))
                 self.print_out("TESTING ALL BUFFER: " + str(msg_item))
-                self.print_out(msg_item.data.get('utterance'))
+                self.print_out(ts)
+                self.print_out(msg.data.get('utterance'))
 
 
 
