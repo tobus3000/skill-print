@@ -1,7 +1,7 @@
 Feature: printer
-  Scenario: print status
+  Scenario: printer status
     Given an English speaking user
-     When the user says "print status"
+     When the user says "printer status"
      Then "skill-print.tobus3000" should reply with dialog from "status.dialog"
   Scenario: disable printer
     Given an English speaking user

@@ -4,3 +4,4 @@ activate
 deactivate
 on
 off
+status

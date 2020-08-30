@@ -65,7 +65,7 @@ class Print(MycroftSkill):
         status = "disabled"
         if self.printer_active:
             status = "enabled"
-        self.speak_dialog('status', data={"status": status})
+        self.speak_dialog('status', data={"target": "printer", "status": status})
         if self.print_all is False and self.printer_active():
             self.__print("The printer is " + status + ".")
         return
@@ -84,8 +84,7 @@ class Print(MycroftSkill):
         status = "disabled"
         if self.print_lf:
             status = "enabled"
-        msg = "Line feed after each message is " + status + "."
-        self.speak(msg)
+        self.speak_dialog('status', data={"target": "linefeed", "status": status})
         if self.print_all is False and self.printer_active():
             self.__print(msg)
 
@@ -185,9 +184,17 @@ class Print(MycroftSkill):
         amount = message.data.get('amount')
         
         """ Print an empty line... """
-        if target == "linefeed" or target == "feed":
+        if target in ["linefeed", "feed"]:
             self.__print(" ")
-        
+
+        """ Print a local time/date stamp """        
+        if target in ["time", "date"]:
+            self.__print(self.__get_datetime())
+
+        """ Print the printer status """
+        if target == "status":
+            self.printer_status()
+
         if self.__is_number(amount):
             self.print_out("TESTING AMOUNT: " + str(amount))
             
@@ -195,10 +202,6 @@ class Print(MycroftSkill):
             for msg_item in self.msg_bucket:
                 self.log.debug(str(msg_item))
                 self.print_out("TESTING ALL BUFFER: " + str(msg_item))
-
-        """ Print the printer status """
-        if target == "status":
-            self.printer_status()
 
 
 
@@ -211,23 +214,21 @@ class Print(MycroftSkill):
             self.speak_dialog('pleaserepeat')
             return
 
-        if action in ["enable", "activate", "on"]:
-            if target == "printer":
-                self.printer_enable()
-                self.printer_status()
-                
-            elif target == "linefeed":
-                self.linefeed_enable()
-                self.linefeed_status()
+        if action in ["enable", "activate", "on"] and target == "printer":
+            self.printer_enable()
+        elif action in ["enable", "activate", "on"] and target in ["linefeed", "feed"]:
+            self.linefeed_enable()
+        elif action in ["disable", "deactivate", "off"] and target == "printer":
+            self.printer_disable()
+        elif action in ["disable", "deactivate", "off"] and target in ["linefeed", "feed"]:
+            self.linefeed_disable()
+        
+        if target == "printer":
+            self.printer_status()
+        
+        if target in ["linefeed", "feed"]:
+            self.linefeed_status()
 
-        elif action in ["disable", "deactivate", "off"]:
-            if target == "printer":
-                self.printer_disable()
-                self.printer_status()
-
-            elif target == "linefeed":
-                self.linefeed_disable()
-                self.linefeed_status()
 
     def handler_speak(self, message):
         self.bucket_add(message)

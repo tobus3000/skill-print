@@ -1,3 +1,2 @@
-The printer is {status}.
-Your printer is {status}.
-Current printer status is {status}.
+The {target} is {status}.
+Current {target} status is {status}.
