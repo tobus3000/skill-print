@@ -24,6 +24,8 @@ skillMetadata:
             value: 50
       - name: USB Printer
         fields:
+          - type: label
+            label: Make sure to apply the udev rule and to add the local user to the lp group.
           - name: printdev
             type: text
             label: The local path (eg. /dev/usb/lp0).

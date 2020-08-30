@@ -2,7 +2,7 @@ Feature: print
   Scenario: print status
     Given an English speaking user
      When the user says "printer status"
-     Then "skill-print.tobus3000" should reply with dialog from "status.dialog"
+     Then mycroft reply should contain "status"
   Scenario: print time
     Given an English speaking user
      When the user says "print time"

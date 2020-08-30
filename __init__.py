@@ -194,6 +194,7 @@ class Print(MycroftSkill):
         """ Print the printer status """
         if target == "status":
             self.printer_status()
+            self.linefeed_status()
 
         if self.__is_number(amount):
             self.print_out("TESTING AMOUNT: " + str(amount))
