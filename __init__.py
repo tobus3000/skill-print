@@ -41,15 +41,14 @@ class Print(MycroftSkill):
         self.print_lf = self.settings.get('printlf', False)
         self.print_time = self.settings.get('printtime', True)
         self.bucket_size = self.settings.get('bucketsize', 50)
+
         if self.__valid_printdev(self.print_dev):
             self.log.info("Printer device is: " + str(self.print_dev))
-            self.log.debug("Print out everything is set to: " + str(self.print_all))
-            self.log.debug("Past messages bucket size: " + str(self.bucket_size))
         else:
             self.printer_disable()
-            self.log.info("Printer device seems to be invalid.")
-            self.log.debug("Print out everything is set to: " + str(self.print_all))
-            self.log.debug("Print out everything is set to: " + str(self.print_all))
+        
+        self.log.debug("Print out everything is set to: " + str(self.print_all))
+        self.log.debug("Past messages bucket size: " + str(self.bucket_size))            
         return
 
 
@@ -69,6 +68,7 @@ class Print(MycroftSkill):
         if self.printer_active:
             status = "enabled"
         self.speak_dialog('status', status)
+        return
         
 
     def printer_enable(self):
@@ -91,29 +91,28 @@ class Print(MycroftSkill):
         self.settings['printlf'] = False
         return
 
-    """ Get a nice date/time string """
+    """ Private: Get a nice date/time string """
     def __get_datetime(self):
         tz = pytz.timezone(self.location_timezone)
         cur_time_obj = datetime.now(tz)
         return str(cur_time_obj.strftime('%d.%m.%Y %H:%M:%S %Z %z'))
 
-    """ Generic regex check returning True/False """
+    """ Private: Generic regex check returning True/False """
     def __regex_match(self, chk_strg, search=re.compile(r'[^/a-z0-9.]').search):
         return not bool(search(chk_strg))
 
 
-    """ Some checking to avoid shell command injection and to make sure the device is active. """
+    """ Private: Some checking to avoid shell command injection and to make sure the device is active. """
     def __valid_printdev(self, printdev):
         if self.__regex_match(printdev):
             """ There's not too much garbage in the string, thus giving it a shot to see if it exists..."""
             res_obj = subprocess.run(["file", printdev], check=True, timeout=1)
             if res_obj.returncode == 0:
-                self.log.info("Valid printer.")
                 return True
         self.log.error("Configured printer device is invalid.")
         return False
         
-    """ Simple check to see if string is a number... """
+    """ Private: Simple check to see if string is a number... """
     def __is_number(self, s):
         if s is None:
             return False
@@ -127,16 +126,13 @@ class Print(MycroftSkill):
     def __print(self, msg):
         if self.__valid_printdev(self.print_dev) is False:
             self.printer_disable()
-            self.log.error("Invalid printer device.")
-            self.speak_dialog('error')
             return False
 
         try:
             printdev = open(self.print_dev, "a")
         except:
             self.printer_disable()
-            self.log.error("Could not start printer commnunication.")
-            self.speak_dialog('error')
+            self.log.error("Could not start printer communication.")
             return False
         
         try:
@@ -144,7 +140,6 @@ class Print(MycroftSkill):
         except:
             self.printer_disable()
             self.log.error("Failed to send message to printer.")
-            self.speak_dialog('error')
             return False
         printdev.close()
         return True
@@ -157,7 +152,8 @@ class Print(MycroftSkill):
             self.__print(self.__get_datetime())
                 
         if self.printer_active: 
-            self.__print(str(msg))
+            if self.__print(str(msg)) is False:
+                self.speak_dialog('error')
 
         if self.printer_active and self.print_lf:
             self.__print(" ")
@@ -168,14 +164,12 @@ class Print(MycroftSkill):
     """
     @intent_handler('print.intent')
     def handler_print(self, message):
-        self.log.debug("Running print handler....")	
+        self.log.debug("Running print.intent handler.")	
         """ Fetch the target from the message """
         target = message.data.get('target')
         amount = message.data.get('amount')
         if target == "linefeed" or target == "feed":
-            self.linefeed_disable()
-            self.print_out(" ")
-            self.linefeed_enable()
+            self.__print(" ")
         
         if self.__is_number(amount):
             self.print_out("TESTING AMOUNT: " + str(amount))
@@ -192,7 +186,7 @@ class Print(MycroftSkill):
 
     @intent_handler('printerconfig.intent')
     def handler_config(self, message):
-        self.log.debug("Running config handler....")
+        self.log.debug("Running printerconfig.intent handler.")
         action = message.data.get('action')
         target = message.data.get('target')
         if action is None:
