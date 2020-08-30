@@ -53,11 +53,9 @@ class Print(MycroftSkill):
 
 
     def bucket_add(self, message):
-        #today = datetime.now()
-        today = "testdate"
         if self.bucket_size <= len(self.msg_bucket):
             del(self.msg_bucket[0]) 
-        self.msg_bucket.append((today, message))
+        self.msg_bucket.append((self.__get_datetime(), message))
 
     def bucket_get(self, message, amount):
         pass
@@ -68,8 +66,9 @@ class Print(MycroftSkill):
         if self.printer_active:
             status = "enabled"
         self.speak_dialog('status', data={"status": status})
+        if self.print_all is False and self.printer_active():
+            self.__print("The printer is " + status + ".")
         return
-        
 
     def printer_enable(self):
         self.printer_active = True
@@ -80,6 +79,15 @@ class Print(MycroftSkill):
         self.printer_active = False
         self.settings['printeractive'] = False
         return
+
+    def linefeed_status(self):
+        status = "disabled"
+        if self.print_lf:
+            status = "enabled"
+        msg = "Line feed after each message is " + status + "."
+        self.speak(msg)
+        if self.print_all is False and self.printer_active():
+            self.__print(msg)
 
     def linefeed_enable(self):
         self.print_lf = True
@@ -106,10 +114,11 @@ class Print(MycroftSkill):
     def __valid_printdev(self, printdev):
         if self.__regex_match(printdev):
             """ There's not too much garbage in the string, thus giving it a shot to see if it exists..."""
-            res_obj = subprocess.run(["file", printdev], check=True, timeout=1)
-            if res_obj.returncode == 0:
+            try:
+                subprocess.run(["ls", printdev], stdout=subprocess.DEVNULL, check=True, timeout=1)
                 return True
-        self.log.error("Configured printer device is invalid.")
+            except:
+                self.log.error("Configured printer device is invalid.")
         return False
         
     """ Private: Simple check to see if string is a number... """
@@ -124,6 +133,10 @@ class Print(MycroftSkill):
 
     """ Private: Send message to printer device """
     def __print(self, msg):
+        self.log.debug("Printing line.")
+        if self.printer_active() is False:
+            return False
+
         if self.__valid_printdev(self.print_dev) is False:
             self.printer_disable()
             return False
@@ -136,7 +149,7 @@ class Print(MycroftSkill):
             return False
         
         try:
-            spobj = subprocess.run(['echo', msg], stdout=printdev, check=True, timeout=1)
+            subprocess.run(['echo', msg], stdout=printdev, check=True, timeout=1)
         except:
             self.printer_disable()
             self.log.error("Failed to send message to printer.")
@@ -147,15 +160,14 @@ class Print(MycroftSkill):
 
     """ Public: Prepare and send message """
     def print_out(self, msg):
-        self.log.debug("Printing...")
-        if self.print_time and self.printer_active:
+        self.log.debug("Starting print out.")
+        if self.print_time:
             self.__print(self.__get_datetime())
-                
-        if self.printer_active: 
-            if self.__print(str(msg)) is False:
-                self.speak_dialog('error')
 
-        if self.printer_active and self.print_lf:
+        if self.__print(str(msg)) is False:
+            self.speak_dialog('error')
+
+        if self.print_lf:
             self.__print(" ")
 
 
@@ -168,6 +180,8 @@ class Print(MycroftSkill):
         """ Fetch the target from the message """
         target = message.data.get('target')
         amount = message.data.get('amount')
+        
+        """ Print an empty line... """
         if target == "linefeed" or target == "feed":
             self.__print(" ")
         
@@ -179,6 +193,7 @@ class Print(MycroftSkill):
                 self.log.debug(str(msg_item))
                 self.print_out("TESTING ALL BUFFER: " + str(msg_item))
 
+        """ Print the printer status """
         if target == "status":
             self.printer_status()
 
@@ -190,30 +205,30 @@ class Print(MycroftSkill):
         action = message.data.get('action')
         target = message.data.get('target')
         if action is None:
-            self.speak("I did not understand. Please repeat.")
+            self.speak_dialog('pleaserepeat')
             return
         
         if target is None:
-            self.speak("I didn't catch the target. Can you please repeat?")
+            self.speak_dialog('pleaserepeat')
             return
 
         if action == "enable" or action == "activate":
             if target == "printer":
-                self.speak("Enabling printer.")
                 self.printer_enable()
+                self.printer_status()
                 
             elif target == "linefeed":
-                self.speak("Enabling linefeed.")
                 self.linefeed_enable()
+                self.linefeed_status()
 
         elif action == "disable" or action == "deactivate":
             if target == "printer":
-                self.speak("Disabling printer.")
                 self.printer_disable()
+                self.printer_status()
 
             elif target == "linefeed":
-                self.speak("Disabling linefeed.")
                 self.linefeed_disable()
+                self.linefeed_status()
 
     def handler_speak(self, message):
         self.bucket_add(message)
