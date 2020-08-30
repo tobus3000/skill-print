@@ -233,7 +233,11 @@ class Print(MycroftSkill):
         self.bucket_add(message)
         if self.printer_active:
             if self.print_all:
-                self.print_out(format(message.data.get('utterance'))) 
+                try:
+                    self.print_out(format(message.data.get('utterance'))) 
+                except:
+                    self.printer_disable()
+                    self.log.error("Error while printing.")
             else:
                 self.log.debug("Skipping printout of message.")
         else:
