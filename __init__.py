@@ -86,7 +86,7 @@ class Print(MycroftSkill):
             status = "enabled"
         self.speak_dialog('status', data={"target": "linefeed", "status": status})
         if self.print_all is False and self.printer_active():
-            self.__print(msg)
+            self.__print("Linefeed is " + status + ".")
 
     def linefeed_enable(self):
         self.print_lf = True
