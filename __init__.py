@@ -54,7 +54,7 @@ class Print(MycroftSkill):
 
     def bucket_add(self, message):
         if self.bucket_size <= len(self.msg_bucket):
-            del(self.msg_bucket[0]) 
+            del self.msg_bucket[0] 
         self.msg_bucket.append((self.__get_datetime(), message))
 
     def bucket_get(self, message, amount):
