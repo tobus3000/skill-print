@@ -212,7 +212,7 @@ class Print(MycroftSkill):
             self.speak_dialog('pleaserepeat')
             return
 
-        if action == "enable" or action == "activate":
+        if action in ["enable", "activate", "on"]:
             if target == "printer":
                 self.printer_enable()
                 self.printer_status()
@@ -221,7 +221,7 @@ class Print(MycroftSkill):
                 self.linefeed_enable()
                 self.linefeed_status()
 
-        elif action == "disable" or action == "deactivate":
+        elif action in ["disable", "deactivate", "off"]:
             if target == "printer":
                 self.printer_disable()
                 self.printer_status()

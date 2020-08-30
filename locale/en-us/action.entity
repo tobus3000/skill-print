@@ -2,3 +2,5 @@ enable
 disable
 activate
 deactivate
+on
+off
