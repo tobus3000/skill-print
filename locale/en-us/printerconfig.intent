@@ -1,2 +1,2 @@
 {action} (line|) {target}.
-Turn the {target} {action}.
+Turn (the|) {target} {action}.
