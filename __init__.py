@@ -46,7 +46,7 @@ class Print(MycroftSkill):
             self.log.debug("Print out everything is set to: " + str(self.print_all))
             self.log.debug("Past messages bucket size: " + str(self.bucket_size))
         else:
-            self.disable_printer()
+            self.printer_disable()
             self.log.info("Printer device seems to be invalid.")
             self.log.debug("Print out everything is set to: " + str(self.print_all))
             self.log.debug("Print out everything is set to: " + str(self.print_all))
@@ -62,23 +62,31 @@ class Print(MycroftSkill):
 
     def bucket_get(self, message, amount):
         pass
+        return
 
-    def enable_printer(self):
+    def printer_status(self):
+        status = "disabled"
+        if self.printer_active:
+            status = "enabled"
+        self.speak_dialog('status', status)
+        
+
+    def printer_enable(self):
         self.printer_active = True
         self.settings['printeractive'] = True
         return
 
-    def disable_printer(self):
+    def printer_disable(self):
         self.printer_active = False
         self.settings['printeractive'] = False
         return
 
-    def enable_linefeed(self):
+    def linefeed_enable(self):
         self.print_lf = True
         self.settings['printlf'] = True
         return
 
-    def disable_linefeed(self):
+    def linefeed_disable(self):
         self.print_lf = False
         self.settings['printlf'] = False
         return
@@ -119,9 +127,9 @@ class Print(MycroftSkill):
         target = message.data.get('target')
         amount = message.data.get('amount')
         if target == "linefeed" or target == "feed":
-            self.disable_linefeed()
+            self.linefeed_disable()
             self.print_out(" ")
-            self.enable_linefeed()
+            self.linefeed_enable()
         
         if self.__is_number(amount):
             self.print_out("TESTING AMOUNT: " + str(amount))
@@ -130,6 +138,10 @@ class Print(MycroftSkill):
             for msg_item in self.msg_bucket:
                 self.log.debug(str(msg_item))
                 self.print_out("TESTING ALL BUFFER: " + str(msg_item))
+
+        if target == "status":
+            self.printer_status()
+
 
 
     @intent_handler('printerconfig.intent')
@@ -148,20 +160,20 @@ class Print(MycroftSkill):
         if action == "enable" or action == "activate":
             if target == "printer":
                 self.speak("Enabling printer.")
-                self.enable_printer()
+                self.printer_enable()
                 
             elif target == "linefeed":
                 self.speak("Enabling linefeed.")
-                self.enable_linefeed()
+                self.linefeed_enable()
 
         elif action == "disable" or action == "deactivate":
             if target == "printer":
                 self.speak("Disabling printer.")
-                self.disable_printer()
+                self.printer_disable()
 
             elif target == "linefeed":
                 self.speak("Disabling linefeed.")
-                self.disable_linefeed()
+                self.linefeed_disable()
 
     def handler_speak(self, message):
         self.bucket_add(message)
@@ -171,7 +183,7 @@ class Print(MycroftSkill):
                     self.print_out(format(message.data.get('utterance'))) 
                 except:
                     self.log.error("Failed to print.")
-                    self.disable_printer()
+                    self.printer_disable()
 
             else:
                 self.log.debug("Skipping printout of message.")
@@ -184,14 +196,14 @@ class Print(MycroftSkill):
             printdev = open(self.print_dev, "a")
         except:
             self.log.error("Could not start printer commnunication.")
-            self.disable_printer()
+            self.printer_disable()
             return False
         
         try:
             spobj = subprocess.run(['echo', msg], stdout=printdev, check=True, timeout=1)
         except:
             self.log.error("Failed to send message to printer.")
-            self.disable_printer()
+            self.printer_disable()
             return False
         printdev.close()
         return True
@@ -207,18 +219,18 @@ class Print(MycroftSkill):
             print_time = cur_time_obj.strftime('%d.%m.%Y %H:%M:%S %Z %z')
             if self.__print(str(print_time)) is False:
                 self.speak_dialog('error')
-                self.disable_printer()
+                self.printer_disable()
                 
         if self.printer_active: 
             if self.__print(str(msg)) is False:
                 self.speak_dialog('error')
-                self.disable_printer()
+                self.printer_disable()
 
         if self.printer_active and self.print_lf:
             self.log.debug("Printing line feed.")
             if self.__print(" ") is False:
                 self.speak_dialog('error')
-                self.disable_printer()
+                self.printer_disable()
 
 
 
