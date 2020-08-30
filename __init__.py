@@ -2,8 +2,9 @@ from mycroft import MycroftSkill, intent_handler
 #from datetime import date, timedelta, datetime, time, tzinfo
 from datetime import datetime, timezone
 import pytz 
-import os
+import subprocess
 import re
+import os
 
 """
 Print support Mycroft Skill
@@ -83,25 +84,23 @@ class Print(MycroftSkill):
         self.settings['printlf'] = False
         return
 
-    """ Some checking to avoid shell command injection and to make sure the device is active. """
-    def is_valid_printdev(self, printdev):
-        cmd = "file " + self.print_dev
-        exit_code = os.system(cmd)
-        self.log.debug("EXIT CODE: " + str(exit_code))
-        #device_re = re.compile("Bus\s+(?P<bus>\d+)\s+Device\s+(?P<device>\d+).+ID\s(?P<id>\w+:\w+)\s(?P<tag>.+)$", re.I)
-        #df = subprocess.check_output("lsusb")
-        #devices = []
-        #for i in df.split('\n'):
-        #    if i:
-        #        info = device_re.match(i)
-        #        if info:
-        #            dinfo = info.groupdict()
-        #            dinfo['device'] = '/dev/bus/usb/%s/%s' % (dinfo.pop('bus'), dinfo.pop('device'))
-        #            devices.append(dinfo)
-        #self.log.debug(str(df));
-        return True
+    """ Generic regex check returning True/False """
+    def __regex_match(self, chk_strg, search=re.compile(r'[^/a-z0-9.]').search):
+        return not bool(search(chk_strg))
 
-    def is_number(self, s):
+
+    """ Some checking to avoid shell command injection and to make sure the device is active. """
+    def __valid_printdev(self, printdev):
+        if self.__regex_match(printdev):
+            """ There's not too much garbage in the string, thus giving it a shot to see if it exists..."""
+            res_obj = subprocess.run(["file", printdev], check=True, timeout=1)
+
+            self.log.info("Valid printer." + res_obj)
+            return True
+        return False
+        
+
+    def __is_number(self, s):
         if s is None:
             return False
         try:
@@ -124,7 +123,7 @@ class Print(MycroftSkill):
             self.print_out(" ")
             self.enable_linefeed()
         
-        if self.is_number(amount):
+        if self.__is_number(amount):
             self.print_out("TESTING AMOUNT: " + str(amount))
             
         if target == "buffer":
@@ -181,7 +180,9 @@ class Print(MycroftSkill):
 
         
     def print_out(self, target):
-        self.is_valid_printdev(self.print_dev)
+        if self.__valid_printdev(self.print_dev) is False:
+            return
+
         self.log.debug("Printing...")
         if self.print_time and self.printer_active:
             tz = pytz.timezone(self.location_timezone)
