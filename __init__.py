@@ -118,7 +118,7 @@ class Print(MycroftSkill):
                 subprocess.run(["ls", printdev], stdout=subprocess.DEVNULL, check=True, timeout=1)
                 return True
             except:
-                self.log.error("Configured printer device is invalid.")
+                self.printer_disable()
         return False
         
     """ Private: Simple check to see if string is a number... """
@@ -135,10 +135,11 @@ class Print(MycroftSkill):
     def __print(self, msg):
         self.log.debug("Printing line.")
         if self.printer_active() is False:
+            self.log.debug("Printer is not active.")
             return False
 
         if self.__valid_printdev(self.print_dev) is False:
-            self.printer_disable()
+            self.log.error("Configured printer device is invalid.")
             return False
 
         try:
