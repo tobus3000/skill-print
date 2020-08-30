@@ -207,13 +207,15 @@ class Print(MycroftSkill):
             else:
                 for msg_item in self.msg_bucket:
                     (ts, msg) = msg_item
+                    time.sleep(1)
                     self.__print("@" + ts)
+                    time.sleep(1)
                     if msg is not None and msg != "":
                         self.__print(msg.data.get('utterance'))
                     else:
                         self.__print("blank message")
                     # TODO: Add locking on __print
-                    time.sleep(1)
+                    
 
 
 
