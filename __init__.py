@@ -4,7 +4,6 @@ from datetime import datetime, timezone
 import pytz 
 import subprocess
 import re
-import os
 
 """
 Print support Mycroft Skill
@@ -94,9 +93,9 @@ class Print(MycroftSkill):
         if self.__regex_match(printdev):
             """ There's not too much garbage in the string, thus giving it a shot to see if it exists..."""
             res_obj = subprocess.run(["file", printdev], check=True, timeout=1)
-
-            self.log.info("Valid printer.")
-            return True
+            if res_obj.check_returncode():
+                self.log.info("Valid printer.")
+                return True
         self.log.error("Configured printer device is invalid.")
         return False
         
@@ -197,7 +196,7 @@ class Print(MycroftSkill):
         printdev.close()
         return True
 
-    def print_out(self, target):
+    def print_out(self, msg):
         if self.__valid_printdev(self.print_dev) is False:
             return
 
@@ -206,24 +205,18 @@ class Print(MycroftSkill):
             tz = pytz.timezone(self.location_timezone)
             cur_time_obj = datetime.now(tz)
             print_time = cur_time_obj.strftime('%d.%m.%Y %H:%M:%S %Z %z')
-            cmd_ts = 'echo "' + str(print_time) + '" >> ' + self.print_dev
-            exit_code = os.system(cmd_ts)
-            if exit_code != 0:
+            if self.__print(str(print_time)) is False:
                 self.speak_dialog('error')
                 self.disable_printer()
                 
         if self.printer_active: 
-            cmd = 'echo "' + str(target) + '" >> ' + self.print_dev
-            exit_code = os.system(cmd)  # returns the exit code in unix
-            if exit_code != 0:
+            if self.__print(str(msg)) is False:
                 self.speak_dialog('error')
                 self.disable_printer()
 
         if self.printer_active and self.print_lf:
             self.log.debug("Printing line feed.")
-            cmd = 'echo " " >> ' + self.print_dev
-            exit_code = os.system(cmd)
-            if exit_code != 0:
+            if self.__print(" ") is False:
                 self.speak_dialog('error')
                 self.disable_printer()
 
