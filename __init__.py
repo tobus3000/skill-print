@@ -4,6 +4,7 @@ from datetime import datetime, timezone
 import pytz 
 import subprocess
 import re
+import time
 
 """
 Print support Mycroft Skill
@@ -211,6 +212,9 @@ class Print(MycroftSkill):
                         self.__print(msg.data.get('utterance'))
                     else:
                         self.__print("blank message")
+                    # TODO: Add locking on __print
+                    time.sleep(1)
+
 
 
 
