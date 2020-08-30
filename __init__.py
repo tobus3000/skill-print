@@ -179,7 +179,24 @@ class Print(MycroftSkill):
         else:
             self.log.debug("Skipping printout because printer is not active.")
 
+
+    def __print(self, msg):
+        try:
+            printdev = open(self.print_dev, "a")
+        except:
+            self.log.error("Could not start printer commnunication.")
+            self.disable_printer()
+            return False
         
+        try:
+            spobj = subprocess.run(['echo', msg], stdout=printdev, check=True, timeout=1)
+        except:
+            self.log.error("Failed to send message to printer.")
+            self.disable_printer()
+            return False
+        printdev.close()
+        return True
+
     def print_out(self, target):
         if self.__valid_printdev(self.print_dev) is False:
             return
