@@ -67,7 +67,7 @@ class Print(MycroftSkill):
         status = "disabled"
         if self.printer_active:
             status = "enabled"
-        self.speak_dialog('status', status)
+        self.speak_dialog('status', data={"status": status})
         return
         
 
