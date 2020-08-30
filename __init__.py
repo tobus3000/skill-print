@@ -162,13 +162,15 @@ class Print(MycroftSkill):
     def print_out(self, msg):
         self.log.debug("Starting print out.")
         if self.print_time:
-            self.__print(self.__get_datetime())
+            if self.__print(self.__get_datetime()) is False:
+                self.speak_dialog('error')
 
         if self.__print(str(msg)) is False:
             self.speak_dialog('error')
 
         if self.print_lf:
-            self.__print(" ")
+            if self.__print(" ") is False:
+                self.speak_dialog('error')
 
 
     """
