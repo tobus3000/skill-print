@@ -57,10 +57,6 @@ class Print(MycroftSkill):
             del self.msg_bucket[0] 
         self.msg_bucket.append((self.__get_datetime(), message))
 
-    def bucket_get(self, message, amount):
-        pass
-        return
-
     def printer_status(self):
         status = "disabled"
         if self.printer_active:
@@ -203,12 +199,17 @@ class Print(MycroftSkill):
             self.print_out("TESTING AMOUNT: " + str(amount))
             
         if target == "buffer":
-            for msg_item in self.msg_bucket:
-                (ts, msg) = msg_item
-                self.log.debug(str(msg))
-                self.print_out("TESTING ALL BUFFER: " + str(msg_item))
-                self.print_out(ts)
-                self.print_out(msg.data.get('utterance'))
+            if len(self.msg_bucket) == 0:
+                self.speak("The message buffer is empty.")
+                return True
+            else:
+                for msg_item in self.msg_bucket:
+                    (ts, msg) = msg_item
+                    self.print_out(ts)
+                    if msg is not None or msg != "":
+                        self.print_out(msg.data.get('utterance'))
+                    else:
+                        self.print_out("blank message")
 
 
 
