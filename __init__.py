@@ -91,6 +91,12 @@ class Print(MycroftSkill):
         self.settings['printlf'] = False
         return
 
+    """ Get a nice date/time string """
+    def __get_datetime(self):
+        tz = pytz.timezone(self.location_timezone)
+        cur_time_obj = datetime.now(tz)
+        return str(cur_time_obj.strftime('%d.%m.%Y %H:%M:%S %Z %z'))
+
     """ Generic regex check returning True/False """
     def __regex_match(self, chk_strg, search=re.compile(r'[^/a-z0-9.]').search):
         return not bool(search(chk_strg))
@@ -107,7 +113,7 @@ class Print(MycroftSkill):
         self.log.error("Configured printer device is invalid.")
         return False
         
-
+    """ Simple check to see if string is a number... """
     def __is_number(self, s):
         if s is None:
             return False
@@ -116,6 +122,46 @@ class Print(MycroftSkill):
             return True
         except ValueError:
             return False
+
+    """ Private: Send message to printer device """
+    def __print(self, msg):
+        if self.__valid_printdev(self.print_dev) is False:
+            self.printer_disable()
+            self.log.error("Invalid printer device.")
+            self.speak_dialog('error')
+            return False
+
+        try:
+            printdev = open(self.print_dev, "a")
+        except:
+            self.printer_disable()
+            self.log.error("Could not start printer commnunication.")
+            self.speak_dialog('error')
+            return False
+        
+        try:
+            spobj = subprocess.run(['echo', msg], stdout=printdev, check=True, timeout=1)
+        except:
+            self.printer_disable()
+            self.log.error("Failed to send message to printer.")
+            self.speak_dialog('error')
+            return False
+        printdev.close()
+        return True
+
+
+    """ Public: Prepare and send message """
+    def print_out(self, msg):
+        self.log.debug("Printing...")
+        if self.print_time and self.printer_active:
+            self.__print(self.__get_datetime())
+                
+        if self.printer_active: 
+            self.__print(str(msg))
+
+        if self.printer_active and self.print_lf:
+            self.__print(" ")
+
 
     """
     Handle intents
@@ -190,47 +236,6 @@ class Print(MycroftSkill):
         else:
             self.log.debug("Skipping printout because printer is not active.")
 
-
-    def __print(self, msg):
-        try:
-            printdev = open(self.print_dev, "a")
-        except:
-            self.log.error("Could not start printer commnunication.")
-            self.printer_disable()
-            return False
-        
-        try:
-            spobj = subprocess.run(['echo', msg], stdout=printdev, check=True, timeout=1)
-        except:
-            self.log.error("Failed to send message to printer.")
-            self.printer_disable()
-            return False
-        printdev.close()
-        return True
-
-    def print_out(self, msg):
-        if self.__valid_printdev(self.print_dev) is False:
-            return
-
-        self.log.debug("Printing...")
-        if self.print_time and self.printer_active:
-            tz = pytz.timezone(self.location_timezone)
-            cur_time_obj = datetime.now(tz)
-            print_time = cur_time_obj.strftime('%d.%m.%Y %H:%M:%S %Z %z')
-            if self.__print(str(print_time)) is False:
-                self.speak_dialog('error')
-                self.printer_disable()
-                
-        if self.printer_active: 
-            if self.__print(str(msg)) is False:
-                self.speak_dialog('error')
-                self.printer_disable()
-
-        if self.printer_active and self.print_lf:
-            self.log.debug("Printing line feed.")
-            if self.__print(" ") is False:
-                self.speak_dialog('error')
-                self.printer_disable()
 
 
 
