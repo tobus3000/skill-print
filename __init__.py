@@ -135,7 +135,7 @@ class Print(MycroftSkill):
     """ Private: Send message to printer device """
     def __print(self, msg):
         self.log.debug("Printing line for message: " +str(msg))
-        if self.printer_active() is False:
+        if self.printer_active is False:
             self.log.debug("Printer is not active.")
             return False
 
@@ -238,6 +238,7 @@ class Print(MycroftSkill):
                 except:
                     self.printer_disable()
                     self.log.error("Error while printing.")
+                    self.speak_dialog('error')
             else:
                 self.log.debug("Skipping printout of message.")
         else:
