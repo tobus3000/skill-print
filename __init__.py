@@ -63,7 +63,7 @@ class Print(MycroftSkill):
         if self.printer_active:
             status = "enabled"
         self.speak_dialog('status', data={"target": "printer", "status": status})
-        if self.print_all is False and self.printer_active():
+        if self.print_all is False and self.printer_active:
             self.__print("The printer is " + status + ".")
         return
 
@@ -82,7 +82,7 @@ class Print(MycroftSkill):
         if self.print_lf:
             status = "enabled"
         self.speak_dialog('status', data={"target": "linefeed", "status": status})
-        if self.print_all is False and self.printer_active():
+        if self.print_all is False and self.printer_active:
             self.__print("Linefeed is " + status + ".")
 
     def linefeed_enable(self):

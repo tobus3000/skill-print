@@ -16,7 +16,7 @@ skillMetadata:
             value: "true"
           - name: printlf
             type: checkbox
-            label: Adds a line feed after each message.
+            label: Add a line feed after each message.
             value: "false"
           - name: bucketsize
             type: number
@@ -25,7 +25,7 @@ skillMetadata:
       - name: USB Printer
         fields:
           - type: label
-            label: Make sure to apply the udev rule and to add the local user to the lp group.
+            label: Make sure to apply the udev rule (if required) and to add the local user to the lp group.
           - name: printdev
             type: text
             label: The local path (eg. /dev/usb/lp0).
